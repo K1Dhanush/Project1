@@ -19,7 +19,7 @@ public class Role {
     private Integer roleId;
     private String roleName;
 
-   //@OneToMany(mappedBy = "role")
-   //private List<User> user;
+   //@ManyToMany(mappedBy = "role")
+   //private Set<User> user;
 
 }

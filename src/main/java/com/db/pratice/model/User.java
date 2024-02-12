@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * USER ENTITY (OR) TABLE WITH ATTRIBUTES
  */
@@ -33,24 +36,25 @@ public class User {
     /**
      * CHAR either M OR F
      */
-    private char gender;
+    //private char gender;
 
     /**
      * Boolean either TRUE(1) OR FALSE(0)
      */
-    private  Boolean employee;
+    //private  Boolean employee;
 
+/*
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_role", referencedColumnName = "roleId")
     private Role role;
-
-/*
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinTable(name = "User_Role",
-            joinColumns = @JoinColumn(name = "role_id")  //FK (which is Pk in OWN Entity)
-            ,inverseJoinColumns = @JoinColumn(name = "user_id") //FK (Which is PK in Another Entity)
-    )
-    private Role role;
 */
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "User_Role",
+            joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id")  //FK (which is Pk in OWN Entity)
+            ,inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "roleId") //FK (Which is PK in Another Entity)
+    )
+    private List<Role> role= new ArrayList<>();
+
 
 }

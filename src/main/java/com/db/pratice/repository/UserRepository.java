@@ -10,5 +10,6 @@ import java.util.Optional;
  * JpaRepository is used to perform operation on the DB.
  */
 public interface UserRepository extends JpaRepository<User,Integer> {
-    Optional<User> findByUserName(String username);
+   // helping to avoid null pointer exceptions // may or may not contain null-value
+   Optional<User> findByUsername(String username); //present in JPA Repository
 }

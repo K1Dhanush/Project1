@@ -26,7 +26,7 @@ public class Controller {
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping(value = "/index")
+    @GetMapping
     public String Page(){
         return "index";
     }
@@ -100,18 +100,18 @@ public class Controller {
     /**
      * @param id
      * @param password
-     * @param username
+     * //@param username
      * @return user updated details if the user is present else throws EntityNotFoundException
      * @exception EntityNotFoundException if user is not present
      */
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateDetails(@PathVariable int id, @RequestParam String password,String username) {
+    public ResponseEntity<Object> updateDetails(@PathVariable int id, @RequestParam String password) {
         try {
             Optional<User> userOptional = userRepository.findById(id);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
                 user.setPassword(password);
-                user.setUsername(username);
+                //user.setUsername(username);
                 userRepository.save(user);
                 return ResponseEntity.ok().body("Password updated successfully");
             } else {
