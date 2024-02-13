@@ -19,7 +19,6 @@ import java.util.Optional;
  */
 
 @RestController
-@org.springframework.stereotype.Controller
 public class Controller {
     private final Logger logger = LoggerFactory.getLogger(Controller.class);
 
@@ -33,7 +32,7 @@ public class Controller {
 
     /**
      * This method is used to add the UserDetails
-     * @param user
+     * @param user requested from the User
      * @return user
      */
     @PostMapping("/addUser")
@@ -42,7 +41,6 @@ public class Controller {
         logger.info("USER IS ADD");
         return user;
     }
-
     /**
      * GET the Details of the request user
      * @return getAllUserDetails using repository method findAll()
@@ -64,7 +62,7 @@ public class Controller {
             Optional<User> user = userRepository.findById(id);
             if (user.isPresent()) {
                 logger.info("Received the user details");
-                return ResponseEntity.ok().body(user);
+                return ResponseEntity.status(HttpStatus.OK).body(user);
             } else {
                 throw new EntityNotFoundException();
             }
@@ -99,21 +97,20 @@ public class Controller {
 
     /**
      * @param id
-     * @param password
-     * //@param username
      * @return user updated details if the user is present else throws EntityNotFoundException
      * @exception EntityNotFoundException if user is not present
      */
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateDetails(@PathVariable int id, @RequestParam String password) {
+    @PutMapping("/updateUser/{id}")
+    public ResponseEntity<Object> updateDetails(@PathVariable int id, @RequestBody User userUpdate) {
         try {
             Optional<User> userOptional = userRepository.findById(id);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                user.setPassword(password);
-                //user.setUsername(username);
+                user.setPassword(userUpdate.getPassword());
+                user.setUsername(userUpdate.getUsername());
+                user.setRole(userUpdate.getRole());
                 userRepository.save(user);
-                return ResponseEntity.ok().body("Password updated successfully");
+                return ResponseEntity.ok().body("Updated the details of the User.");
             } else {
                 throw new EntityNotFoundException("User not found with ID: " + id);
             }

@@ -12,6 +12,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,34 +25,54 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    /*
+    //Users and their details are stored in memory during runtime
+
     @Bean
-    public UserDetailsService userDetails(){
-        UserDetails admin = User.builder()
-                .username("admin")
+    public InMemoryUserDetailsManager userDetails(){
+        UserDetails employee = User.withUsername("Employee")
                 .password("{noop}123456789")
-                .roles("admin")
+                .roles("SeniourEmp")
                 .build();
-        return new InMemoryUserDetailsManager(admin);
+
+        UserDetails admin = User.withUsername("admin")
+                .password("{noop}password")
+                .roles("ADMIN")
+                .build();
+        //For all the Users same password and username
+        UserDetails user = User.withUsername("USER")
+                .password("{noop}Dhanesh@123")
+                .roles("user")
+                .build();
+        return new InMemoryUserDetailsManager(admin,employee,user);
     }
-    */
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/addUser/**").hasRole("admin")
-                        .requestMatchers(HttpMethod.GET).permitAll()
-                        //.hasRole("admin")
+                        .requestMatchers("/updateUser/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET).hasRole("user")//.permitAll()
+                        .requestMatchers(HttpMethod.POST).hasAnyRole("ADMIN","SeniourEmp")
+
                         .anyRequest()
                 .authenticated())
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults()) //Customizer.withDefaults() is used to apply default configurations for form-based login and HTTP Basic authentication.
                 .build();
     }
 
-    @Autowired
-    private CustomerUserDetailsService userDetailsService;
+    //@Autowired
+    //private CustomerUserDetailsService userDetailsService;
+/*
+   @Bean
+    public AuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        //provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
+    }
+*/
+
 /*
     @Bean
     public PasswordEncoder passwordEncoder() {
