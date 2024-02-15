@@ -1,6 +1,9 @@
 package com.db.pratice.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,18 +33,14 @@ public class User {
     /**
      * should be string
      */
+    @NotNull(message = "Username should not be null")
+    @NotBlank(message = "Username is mandatory")
+    @Size(min = 5,max = 25,message = " Username Should be b/w 5 and 25 chars")
     private String username;
+    @NotNull(message = "Password should not be null")
+    @NotBlank(message = "Password is mandatory")
+    @Size(min = 5,max = 20,message = "Password Should be b/w 5 and 20 chars")
     private String password;
-
-    /**
-     * CHAR either M OR F
-     */
-    //private char gender;
-
-    /**
-     * Boolean either TRUE(1) OR FALSE(0)
-     */
-    //private  Boolean employee;
 
 /*
     @OneToOne(cascade = CascadeType.ALL)

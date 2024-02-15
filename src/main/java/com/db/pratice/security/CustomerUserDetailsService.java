@@ -17,12 +17,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+//@Component
 //@Configuration
 //interface provided by the spring-security.
 //It is used to retrieve user-related data such as username, password, and authorities (roles) during the authentication process.
@@ -38,20 +40,34 @@ public class CustomerUserDetailsService implements UserDetailsService {
                 .orElseThrow(()->new UsernameNotFoundException("Username not Found"));
         //below user is different.
         //to get the -- Role
-        logger.info("Role ->"+mapRolesToAuthority(user.getRole()));
         logger.info("Username of the user is "+username);
         logger.info("Password for the user is "+user.getPassword());
-        return new org.springframework.security.core.userdetails.User(username,user.getPassword(),mapRolesToAuthority(user.getRole()));
+        logger.info("Role ->"+mapRolesToAuthority(user.getRole()));
+
+        //for geting the RoleName
+        Collection<GrantedAuthority> roles =mapRolesToAuthority(user.getRole());
+        String roleName="";
+        for (GrantedAuthority role : roles) {
+            //System.out.println(role.getRoleName());
+            roleName=role.getAuthority();
+        }
+        System.out.println(roleName);
+        //return new MyUserDetails(user);
+        //return new org.springframework.security.core.userdetails.User(username,user.getPassword(),mapRolesToAuthority(user.getRole()));
+
+
+        return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles(roleName)
+                .build();
+
     }
 
-    @Bean
     //interface
     //GrantedAuthority -- represents the roles or permissions granted to authenticated users. It is used for authorization purposes
     public Collection<GrantedAuthority> mapRolesToAuthority(List<Role> roles) {
-
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());// O/P is in list format
     }
-
 }
 
 
